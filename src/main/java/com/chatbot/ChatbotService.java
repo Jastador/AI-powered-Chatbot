@@ -12,20 +12,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Service
-public class ChatbotService {
+public class ChatbotService 
+{
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String API_KEY = System.getenv("OPENAI_API_KEY");
 
-    public String getResponse(String userInput) throws IOException {
+    public String getResponse(String userInput) throws IOException 
+    {
+        
         // Log the user input
         System.out.println("User Input: " + userInput);
 
         // Step 1: Prepare the JSON payload for the request
         JSONObject jsonPayload = new JSONObject();
         jsonPayload.put("model", "gpt-3.5-turbo");
-
-        // Use a system message to guide the chatbot to respond casually
+ 
         JSONArray messages = new JSONArray();
         messages.put(new JSONObject().put("role", "system").put("content", "You are a friendly, casual chatbot."));
         messages.put(new JSONObject().put("role", "user").put("content", userInput));
@@ -43,7 +45,8 @@ public class ChatbotService {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
 
-        try (OutputStream os = connection.getOutputStream()) {
+        try (OutputStream os = connection.getOutputStream()) 
+        {
             byte[] input = jsonBody.getBytes("utf-8");
             os.write(input, 0, input.length);
         }
@@ -52,10 +55,12 @@ public class ChatbotService {
         int responseCode = connection.getResponseCode();
         System.out.println("Response Code: " + responseCode);
 
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) 
+        {
             String inputLine;
             StringBuilder response = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
+            while ((inputLine = in.readLine()) != null) 
+            {
                 response.append(inputLine);
             }
             String apiResponse = response.toString();
@@ -64,19 +69,24 @@ public class ChatbotService {
             System.out.println("Raw API Response: " + apiResponse);
 
             // Step 5: Check if the response is successful and clean it
-            if (responseCode == HttpURLConnection.HTTP_OK) {
+            if (responseCode == HttpURLConnection.HTTP_OK) 
+            {
                 String cleanedMessage = cleanResponse(apiResponse);
                 System.out.println("Cleaned API Response: " + cleanedMessage);
                 return cleanedMessage;
-            } else {
+            } 
+            else 
+            {
                 System.out.println("Error: Received non-OK response code");
                 return "Oops! Something went wrong. Please try again later.";
             }
         }
     }
 
-    private String cleanResponse(String response) {
-        try {
+    private String cleanResponse(String response) 
+    {
+        try 
+        {
             // Parse the response as a JSON object
             JSONObject jsonResponse = new JSONObject(response);
 
@@ -88,7 +98,8 @@ public class ChatbotService {
                                          .trim();  // Remove any surrounding whitespace
 
             // Check if the response contains the word "Error"
-            if (message.toLowerCase().contains("error")) {
+            if (message.toLowerCase().contains("error")) 
+            {
                 return "Oops! Something went wrong. Please try again later."; // Custom fallback message
             }
 
@@ -97,7 +108,9 @@ public class ChatbotService {
 
             // Return the cleaned message
             return message;
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             // Log the error and return a fallback message if parsing fails
             System.out.println("Error parsing response: " + e.getMessage());
             return "Oops! Something went wrong. Please try again later.";

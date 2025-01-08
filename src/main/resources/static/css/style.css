@@ -1,83 +1,95 @@
-/* Define the custom font */
-@font-face {
-    font-family: 'Customfont'; /* Custom font name */
-    src: url('/assets/fonts/Decaydence.otf') format('opentype'); /* Relative path */
+/* Custom Font */
+@font-face 
+{
+    font-family: 'Customfont'; 
+    src: url('/assets/fonts/Decaydence.ttf') format('truetype'),
+         url('/assets/fonts/Decaydence.otf') format('opentype')
+         url('/assets/fonts/Decaydence.woff') format('woff')
+         url('/assets/fonts/Decaydence.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
 }
 
-/* General body styling */
-body {
-    font-family: 'Poppins', sans-serif;
+body 
+{
+    font-family: 'Customfont', sans-serif;
     margin: 0;
     padding: 0;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Prevent scrollbars */
-    position: relative; /* Necessary for z-index positioning */
+    overflow: hidden;       /* Prevent scrollbars */
+    position: relative;     /* Z-index positioning */
 }
 
 /* Fullscreen video background */
-.video-background {
+.video-background 
+{
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    z-index: -2; /* Place it behind everything */
+    z-index: -2;            /* Place it behind everything */
 }
 
-.video-background video {
+.video-background video 
+{
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensure the video fills the screen */
+    object-fit: cover;      /* Video fills the screen */
 }
 
-/* Full-screen semi-transparent background text */
+
+
+/* Full-screen semi-transparent background text 
 .background-text {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Customfont', sans-serif; /* Custom font */
-    font-size: 20rem; /* Huge size for full-screen impact */
-    color: rgba(255, 255, 255, 0.1); /* White with reduced opacity */
-    z-index: -1; /* Place above video but below other content */
-    white-space: nowrap; /* Prevent wrapping */
-    pointer-events: none; /* Ensure it doesn't interfere with clicks */
-    text-align: center; /* Center the text within its container */
-}
+    /*font-size: 20rem; /* Huge size for full-screen impact */
+    /*color: rgba(255, 255, 255, 0.1); /* White with reduced opacity */
+    /*z-index: -1; /* Place above video but below other content */
+    /*white-space: nowrap; /* Prevent wrapping */
+    /*pointer-events: none; /* Ensure it doesn't interfere with clicks */
+    /*text-align: center; /* Center the text within its container */ 
 
-/* Chat title styling */
-h2 {
-    font-family: 'Customfont', sans-serif; /* Custom font */
+    
+    
+/* Title styling */
+h1 
+{
+    font-family: 'Customfont', sans-serif; 
     font-weight: 600;
     color: black;
     text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5);
     font-size: 5rem;
     position: absolute;
-    top: 10%; /* Adjusted for better placement */
+    top: 10%; 
     left: 50%;
     opacity: 0.6;
-    transform: translateX(-50%); /* Center horizontally */
+    transform: translateX(-50%);            /* Center horizontally */
 }
 
 /* Input field and button container */
-.chat-input {
+.chat-input 
+{
     position: absolute;
-    bottom: 10%; /* Adjusted for responsiveness */
+    bottom: 10%; 
     left: 50%;
     transform: translateX(-50%);
-    display: flex; /* Flexbox layout for alignment */
-    gap: 10px; /* Space between input and button */
+    display: flex; 
+    gap: 10px; 
 }
 
 /* Input field styles */
-input[type="text"] {
-    width: 300px; /* Adjust width for responsiveness */
+input[type="text"] 
+{
+    width: 300px; 
     padding: 10px;
     font-size: 16px;
     border: 2px solid #ddd;
@@ -85,8 +97,9 @@ input[type="text"] {
 }
 
 /* Button styles */
-button {
-    padding: 10px 15px; /* Adjust padding */
+button 
+{
+    padding: 10px 15px; 
     background-color: #2575fc;
     color: white;
     font-size: 16px;
@@ -96,6 +109,7 @@ button {
     transition: background-color 0.3s;
 }
 
-button:hover {
+button:hover 
+{
     background-color: #1e5cb3;
 }

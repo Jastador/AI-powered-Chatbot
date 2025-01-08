@@ -1,9 +1,11 @@
-function sendMessage() {
+function sendMessage() 
+{
     const userInputField = document.getElementById('userInput');
     const messagesContainer = document.getElementById('messages');
     const userInput = userInputField.value.trim();
 
-    if (!userInput) {
+    if (!userInput) 
+    {
         return;
     }
 
@@ -11,7 +13,8 @@ function sendMessage() {
     displayMessage(userInput, 'user');
 
     // Display typing indicator for bot
-    if (!document.querySelector('.typing-indicator')) {
+    if (!document.querySelector('.typing-indicator')) 
+    {
         const typingIndicator = document.createElement('div');
         typingIndicator.classList.add('message', 'bot-message', 'typing-indicator');
         typingIndicator.innerText = "Bot is typing...";
@@ -19,37 +22,44 @@ function sendMessage() {
     }
 
     // Send request to Spring Boot API
-    fetch('/chatbot/ask', {
+    fetch('/chatbot/ask', 
+    {
         method: 'POST',
-        headers: {
+        headers: 
+        {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ userInput }),
     })
-    .then(response => {
-        if (!response.ok) {
+    .then(response => 
+        {
+        if (!response.ok) 
+        {
             throw new Error('Failed to fetch bot response');
         }
-        return response.text(); // Adjust to response.json() if necessary
+        return response.text(); 
     })
-    .then(data => {
+    .then(data => 
+    {
         const typingIndicator = document.querySelector('.typing-indicator');
         if (typingIndicator) {
             messagesContainer.removeChild(typingIndicator);
         }
         displayMessage(data, 'bot');
     })
-    .catch(error => {
+    .catch(error =>
+    {
         console.error('Error:', error);
         displayMessage("Error communicating with the chatbot.", 'bot');
     });
 
-    // Clear input field and focus back to it
+    // Clear input field 
     userInputField.value = '';
     userInputField.focus();
 }
 
-function displayMessage(message, sender) {
+function displayMessage(message, sender) 
+{
     const messagesContainer = document.getElementById('messages');
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
@@ -61,8 +71,10 @@ function displayMessage(message, sender) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-function handleKeyPress(event) {
-    if (event.key === 'Enter') {
+function handleKeyPress(event) 
+{
+    if (event.key === 'Enter') 
+    {
         sendMessage();
     }
 }
