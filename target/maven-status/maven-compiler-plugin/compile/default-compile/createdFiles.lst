@@ -1,4 +1,4 @@
-com\model\ChatbotRequest.class
 com\chatbot\ChatbotApplication.class
-com\chatbot\ChatbotController.class
 com\chatbot\ChatbotService.class
+com\model\ChatbotRequest.class
+com\chatbot\ChatbotController.class

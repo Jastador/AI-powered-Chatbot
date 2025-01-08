@@ -1,76 +1,77 @@
 package com.chatbot;
 
-import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Service
 public class ChatbotService {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String API_KEY = System.getenv("OPENAI_API_KEY");
-    {
-        System.out.println("API Key: " + API_KEY); // Debugging line
-    }
-
-    private final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .build();
 
     public String getResponse(String userInput) throws IOException {
         // Log the user input
         System.out.println("User Input: " + userInput);
 
-        // Prepare the JSON payload
+        // Step 1: Prepare the JSON payload for the request
         JSONObject jsonPayload = new JSONObject();
         jsonPayload.put("model", "gpt-3.5-turbo");
-        jsonPayload.put("messages", new JSONArray().put(new JSONObject().put("role", "user").put("content", userInput)));
+
+        // Use a system message to guide the chatbot to respond casually
+        JSONArray messages = new JSONArray();
+        messages.put(new JSONObject().put("role", "system").put("content", "You are a friendly, casual chatbot."));
+        messages.put(new JSONObject().put("role", "user").put("content", userInput));
+
+        jsonPayload.put("messages", messages);
         jsonPayload.put("max_tokens", 50);
         jsonPayload.put("temperature", 0.7);
 
-        // Build the request body
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"),
-                jsonPayload.toString()
-        );
+        // Step 2: Create the request and send it
+        String jsonBody = jsonPayload.toString();
+        URL url = new URL(API_URL);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Authorization", "Bearer " + API_KEY);
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
 
-        // Build the request
-        Request request = new Request.Builder()
-                .url(API_URL)
-                .addHeader("Authorization", "Bearer " + API_KEY)
-                .post(body)
-                .build();
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] input = jsonBody.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
 
-        // Send the request to get the response
-        try (Response response = client.newCall(request).execute()) {
-            // Log response code
-            System.out.println("Response Code: " + response.code());
+        // Step 3: Get the response code and read the response
+        int responseCode = connection.getResponseCode();
+        System.out.println("Response Code: " + responseCode);
 
-            // Log the exact response body for debugging
-            if (response.body() != null) {
-                String responseBody = response.body().string();
-                System.out.println("Response Body: " + responseBody);
-
-                if (!response.isSuccessful()) {
-                    return "Error: " + response.code() + " - " + responseBody; // Return detailed error
-                }
-
-                // Clean up the response text to extract the generated text
-                return cleanResponse(responseBody);
-            } else {
-                System.out.println("Response Body: null");
-                return "Error: Response body is null";
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
             }
-        } catch (IOException e) {
-            // Handle any IO exceptions
-            System.out.println("Error during API call: " + e.getMessage());
-            throw new IOException("Error during API call: " + e.getMessage(), e);
+            String apiResponse = response.toString();
+
+            // Step 4: Log the raw API response
+            System.out.println("Raw API Response: " + apiResponse);
+
+            // Step 5: Check if the response is successful and clean it
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                String cleanedMessage = cleanResponse(apiResponse);
+                System.out.println("Cleaned API Response: " + cleanedMessage);
+                return cleanedMessage;
+            } else {
+                System.out.println("Error: Received non-OK response code");
+                return "Oops! Something went wrong. Please try again later.";
+            }
         }
     }
 
@@ -79,16 +80,27 @@ public class ChatbotService {
             // Parse the response as a JSON object
             JSONObject jsonResponse = new JSONObject(response);
 
-            // Extract the generated text from the "choices" array and "message" object
-            return jsonResponse.getJSONArray("choices")
-                               .getJSONObject(0)
-                               .getJSONObject("message")
-                               .getString("content")
-                               .trim();
+            // Extract the message content
+            String message = jsonResponse.getJSONArray("choices")
+                                         .getJSONObject(0)  // Get the first choice
+                                         .getJSONObject("message")  // Get the message object
+                                         .getString("content")  // Get the content
+                                         .trim();  // Remove any surrounding whitespace
+
+            // Check if the response contains the word "Error"
+            if (message.toLowerCase().contains("error")) {
+                return "Oops! Something went wrong. Please try again later."; // Custom fallback message
+            }
+
+            // Log the cleaned message
+            System.out.println("Cleaned Message: " + message);
+
+            // Return the cleaned message
+            return message;
         } catch (Exception e) {
-            // Handle errors if parsing fails
+            // Log the error and return a fallback message if parsing fails
             System.out.println("Error parsing response: " + e.getMessage());
-            return "Error parsing response.";
+            return "Oops! Something went wrong. Please try again later.";
         }
     }
 }

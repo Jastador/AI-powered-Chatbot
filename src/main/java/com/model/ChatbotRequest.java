@@ -1,25 +1,18 @@
 package com.model;
 
-public class ChatbotRequest 
-{
+public class ChatbotRequest {
+
     private String userInput;
 
-    // Constructor
+    // Default constructor
     public ChatbotRequest() {}
 
-    public ChatbotRequest(String userInput) 
-    {
-        this.userInput = userInput;
-    }
-
-    // Getter and Setter
-    public String getUserInput() 
-    {
+    // Getter and Setter for userInput
+    public String getUserInput() {
         return userInput;
     }
 
-    public void setUserInput(String userInput)
-    {
+    public void setUserInput(String userInput) {
         this.userInput = userInput;
     }
 }
