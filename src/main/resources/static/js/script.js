@@ -1,24 +1,42 @@
 function sendMessage() {
-    const userInput = document.getElementById('userInput').value;
+    const userInputField = document.getElementById('userInput');
+    const messagesContainer = document.getElementById('messages');
+    const userInput = userInputField.value.trim();
 
-    if (!userInput.trim()) {
+    if (!userInput) {
         return;
     }
 
     // Display the user message
     displayMessage(userInput, 'user');
 
+    // Display typing indicator for bot
+    if (!document.querySelector('.typing-indicator')) {
+        const typingIndicator = document.createElement('div');
+        typingIndicator.classList.add('message', 'bot-message', 'typing-indicator');
+        typingIndicator.innerText = "Bot is typing...";
+        messagesContainer.appendChild(typingIndicator);
+    }
+
     // Send request to Spring Boot API
-    fetch('http://localhost:8080/chatbot/ask', {
+    fetch('/chatbot/ask', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userInput: userInput }),
+        body: JSON.stringify({ userInput }),
     })
-    .then(response => response.text())  // Handle response as text
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch bot response');
+        }
+        return response.text(); // Adjust to response.json() if necessary
+    })
     .then(data => {
-        // Display the bot response directly as it's plain text
+        const typingIndicator = document.querySelector('.typing-indicator');
+        if (typingIndicator) {
+            messagesContainer.removeChild(typingIndicator);
+        }
         displayMessage(data, 'bot');
     })
     .catch(error => {
@@ -26,24 +44,24 @@ function sendMessage() {
         displayMessage("Error communicating with the chatbot.", 'bot');
     });
 
-    // Clear input field
-    document.getElementById('userInput').value = '';
+    // Clear input field and focus back to it
+    userInputField.value = '';
+    userInputField.focus();
 }
 
 function displayMessage(message, sender) {
+    const messagesContainer = document.getElementById('messages');
     const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message');
-    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+    messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
     messageDiv.innerText = sender === 'user' ? `You: ${message}` : `Bot: ${message}`;
 
-    document.getElementById('messages').appendChild(messageDiv);
+    messagesContainer.appendChild(messageDiv);
 
     // Scroll to the bottom
-    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 function handleKeyPress(event) {
-    // Check if the Enter key was pressed (keyCode 13)
     if (event.key === 'Enter') {
         sendMessage();
     }
