@@ -23,7 +23,7 @@ public class ChatbotController
     }
 
     // POST request to handle user queries
-    @PostMapping("/ask")
+    @PostMapping("/process")  // Adjusted to match the path you're testing
     public ResponseEntity<String> askQuestion(@RequestBody ChatbotRequest request) 
     {
         

@@ -1,4 +1,5 @@
 com\chatbot\ChatbotApplication.class
 com\model\ChatbotRequest.class
 com\chatbot\ChatbotService.class
+InputProcessor.class
 com\chatbot\ChatbotController.class

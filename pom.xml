@@ -64,6 +64,22 @@
             <artifactId>logback-classic</artifactId>
             <version>1.4.11</version>
         </dependency>
+        
+        
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+             <artifactId>stanford-corenlp</artifactId>
+             <version>4.5.4</version>
+        </dependency>
+        
+        
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <classifier>models</classifier>
+            <version>4.5.4</version>
+        </dependency>
+
 
         <!-- JUnit (For testing the bot) -->
         <dependency>
